@@ -17,6 +17,7 @@ export interface GraphQLRequestPluginConfig extends ClientSideBasePluginConfig {
 
 const additionalExportedTypes = `
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+export type GraphQLClientRequestHeaders = RequestOptions["requestHeaders"];
 `;
 
 export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
@@ -45,12 +46,9 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
     autoBind(this);
 
     const typeImport = this.config.useTypeImports ? 'import type' : 'import';
-    const fileExtension = this.config.emitLegacyCommonJSImports ? '' : '.js';
-    const buildPath = this.config.emitLegacyCommonJSImports ? 'cjs' : 'esm';
 
-    this._additionalImports.push(`${typeImport} { GraphQLClient } from 'graphql-request';`);
     this._additionalImports.push(
-      `${typeImport} { GraphQLClientRequestHeaders } from 'graphql-request/build/${buildPath}/types${fileExtension}';`,
+      `${typeImport} { GraphQLClient, RequestOptions } from 'graphql-request';`,
     );
 
     if (this.config.rawRequest) {
